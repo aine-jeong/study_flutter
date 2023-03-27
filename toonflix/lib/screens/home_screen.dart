@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:toonflix/models/webtoon_model.dart';
 import 'package:toonflix/services/api_service.dart';
+import 'package:toonflix/widgets/webtoon_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -15,10 +17,10 @@ class HomeScreen extends StatelessWidget {
           elevation: 2,
           backgroundColor: Colors.white,
           foregroundColor: Colors.green,
-          title: const Text(
+          title: Text(
             "오늘의 웹툰",
-            style: TextStyle(
-              fontSize: 24,
+            style: GoogleFonts.eastSeaDokdo(
+              fontSize: 30,
             ),
           ),
         ),
@@ -27,17 +29,16 @@ class HomeScreen extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               //snapshot.data -> future의 결과값!
-              return ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  //itemBuilder -> 한번에 10개의 아이템만 로딩하고, 필요할 때 다른 데이터를 로딩한다.
-                  var webtoon = snapshot.data![index];
-                  return Text(webtoon.title);
-                },
-                separatorBuilder: (context, index) => const SizedBox(
-                  width: 20,
-                ),
+              // return makeList(snapshot);
+              return Column(
+                children: [
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  Expanded(
+                    child: makeList(snapshot),
+                  ),
+                ],
               );
             }
             return const Center(
@@ -45,5 +46,25 @@ class HomeScreen extends StatelessWidget {
             );
           },
         ));
+  }
+
+  ListView makeList(AsyncSnapshot<List<WebtoonModel>> snapshot) {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: snapshot.data!.length,
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 20,
+      ),
+      itemBuilder: (context, index) {
+        //itemBuilder -> 한번에 10개의 아이템만 로딩하고, 필요할 때 다른 데이터를 로딩한다.
+        var webtoon = snapshot.data![index];
+        return Webtoon(
+            title: webtoon.title, thumb: webtoon.thumb, id: webtoon.id);
+      },
+      separatorBuilder: (context, index) => const SizedBox(
+        width: 40,
+      ),
+    );
   }
 }
